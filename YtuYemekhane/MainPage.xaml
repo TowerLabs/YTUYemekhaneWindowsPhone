@@ -5,10 +5,10 @@
     xmlns:local="using:YtuYemekhane"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-
     mc:Ignorable="d" Background="Black">
+    
     <Page.Resources>
-        <DataTemplate x:Key="DataTemplate1">
+        <DataTemplate x:Key="MenuTemplate">
             <Grid Width="330" Height="480" x:Name="gridYemek" Margin="5"
                   HorizontalAlignment="Center" VerticalAlignment="Center" 
                   Background="White" >
@@ -20,7 +20,6 @@
                     <TextBlock Text="Akşam Yemeği" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="16" />
                     <TextBlock Text="{Binding main_dinner}" Foreground="#FF555454" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="12" Margin="20,0,0,0"/>
                     <TextBlock Text="{Binding main_lunch}" Foreground="#FF555454" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="12" Margin="20,0,0,0"/>
-
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -36,36 +35,52 @@
         </CommandBar>
     </Page.BottomAppBar>
     <Grid Background="#FFEBE8E6">
-        <Grid x:Name="gTopBar" Height="80" VerticalAlignment="Top" Background="#FFE88C54" Margin="0,-4,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" x:Name="TopBar" Height="80" VerticalAlignment="Top" Background="#FFE88C54" Margin="0,-4,0,0">
             <TextBlock x:Name="tContent" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Yemek Listesi" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="32" SelectionHighlightColor="White" Foreground="White" RequestedTheme="Dark"/>
         </Grid>
-        <Grid x:Name="gMenuList" Margin="20,99,20,0" Background="#FFE2E0E0">
-            <ListView x:Name="lMenuList" Margin="0,0,0,1"
-            	ItemTemplate="{StaticResource DataTemplate1}"
-            	ScrollViewer.HorizontalScrollBarVisibility="Auto"
-            	ScrollViewer.VerticalScrollBarVisibility="Disabled"
-            	ScrollViewer.HorizontalScrollMode="Enabled"
-            	ScrollViewer.VerticalScrollMode="Disabled"
-            	ScrollViewer.ZoomMode="Disabled"
-            	SelectionMode="None" Background="#FFE2E0E0">
+        <Grid Grid.Row="1" x:Name="MenuList" Background="#FFE2E0E0">
+            <ListView x:Name="lMenuList" Margin="15,0,0,0"
+            	    ItemTemplate="{StaticResource MenuTemplate}"
+            	    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            	    ScrollViewer.VerticalScrollBarVisibility="Disabled"
+            	    ScrollViewer.HorizontalScrollMode="Enabled"
+            	    ScrollViewer.VerticalScrollMode="Disabled"
+            	    ScrollViewer.ZoomMode="Disabled"
+            	    SelectionMode="None" Background="#FFE2E0E0">
                 <ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel
-            				Orientation="Horizontal" />
+            				    Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
             </ListView>
             <TextBlock x:Name="tNoMenu" TextWrapping="Wrap" Text="Henüz yemek listesi yayınlanmadı." Margin="30,209,34,248" FontFamily="Segoe UI" Foreground="#FF080808" Visibility="Collapsed"/>
         </Grid>
-        <Grid x:Name="gAbout" Margin="0,77,0,262" Background="#FFEBE8E6" RequestedTheme="Light" Height="241" Visibility="Collapsed">
-            <Grid Background="White" Margin="0,0,0,141">
-                <Image Source="Assets/About/Profil.jpg" Margin="10,10,310,10"/>
-                <TextBlock TextWrapping="Wrap" Text="Sezgin Ege" Margin="121,16,163,58" Foreground="Black" FontFamily="Segoe UI" FontSize="20"/>
-                <TextBlock x:Name="tProfil" TextWrapping="Wrap" Text="@SezginEge" Margin="117,53,178,23" Foreground="#FF4F4F4F" Tapped="tProfil_Tapped" FontFamily="Segoe UI" FontSize="18"/>
+
+        <Grid Grid.Row="1" x:Name="AboutSection" Background="White" RequestedTheme="Light" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="Assets/About/Profil.jpg" Margin="20,10,0,0"/>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0">
+                    <TextBlock TextWrapping="Wrap" Text="Sezgin Ege" Margin="0,0,0,10" Foreground="Black" FontFamily="Segoe UI" FontSize="20" VerticalAlignment="Top"/>
+                    <TextBlock x:Name="tProfil" TextWrapping="Wrap" Text="@SezginEge" Margin="0" Foreground="#FF4F4F4F" Tapped="tProfil_Tapped" FontFamily="Segoe UI" FontSize="18" VerticalAlignment="Center"/>
+                </StackPanel>
             </Grid>
-            <Grid Margin="6,120,0,0" Background="White">
-                <TextBlock TextWrapping="Wrap" Text="Bu uygulama &quot;TowerLabs&quot; adına geliştirilmiştir. " Margin="14,13,0,53" Foreground="#FF4F4F4F" HorizontalAlignment="Left" Width="366" FontFamily="Segoe UI" FontSize="18" TextAlignment="Center"/>
-                <TextBlock x:Name="tTowerLabsLink" TextWrapping="Wrap" Text="TowerLabs" Margin="20,66,33,13" Foreground="#FF22598F" FontFamily="Segoe UI" FontSize="22" Tapped="tTowerLabsLink_Tapped" TextAlignment="Center"/>
+            <Grid Grid.Row="1" VerticalAlignment="Top">
+                <TextBlock TextWrapping="Wrap" Text="Bu uygulama &quot;TowerLabs&quot; adına geliştirilmiştir. " Foreground="#FF4F4F4F" Width="366" FontFamily="Segoe UI" FontSize="18" TextAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,50"/>
+                <TextBlock x:Name="tTowerLabsLink" TextWrapping="Wrap" Text="TowerLabs" Foreground="#FF22598F" FontFamily="Segoe UI" FontSize="22" Tapped="tTowerLabsLink_Tapped" TextAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
             </Grid>
         </Grid>
     </Grid>
