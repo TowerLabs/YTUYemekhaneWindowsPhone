@@ -26,12 +26,12 @@
     </Page.Resources>
     <Page.BottomAppBar>
         <CommandBar Background="WhiteSmoke" RequestedTheme="Light">
-            <AppBarButton x:Name="bMenuList" Label="Yemek Listesi" Click="bMenuList_Click"  >
+            <AppBarButton x:Name="ShowMenu" Label="Yemek Listesi" Click="ShowMenuSection_Click"  >
                 <AppBarButton.Icon>
                     <BitmapIcon UriSource="Assets/Icon/silverware.png" />
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="bAboutPage" Label="Hakkında" Icon="People"  Click="bAboutPage_Click" />
+            <AppBarButton x:Name="ShowAboutSection" Label="Hakkında" Icon="People"  Click="ShowAboutSection_Click" />
         </CommandBar>
     </Page.BottomAppBar>
     <Grid Background="#FFEBE8E6">
@@ -40,10 +40,10 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" x:Name="TopBar" Height="80" VerticalAlignment="Top" Background="#FFE88C54" Margin="0,-4,0,0">
-            <TextBlock x:Name="tContent" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Yemek Listesi" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="32" SelectionHighlightColor="White" Foreground="White" RequestedTheme="Dark"/>
+            <TextBlock x:Name="PageTitle" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Yemek Listesi" VerticalAlignment="Center" FontFamily="Segoe UI" FontSize="32" SelectionHighlightColor="White" Foreground="White" RequestedTheme="Dark"/>
         </Grid>
         <Grid Grid.Row="1" x:Name="MenuList" Background="#FFE2E0E0">
-            <ListView x:Name="lMenuList" Margin="15,0,0,0"
+            <ListView x:Name="Menus" Margin="15,0,0,0"
             	    ItemTemplate="{StaticResource MenuTemplate}"
             	    ScrollViewer.HorizontalScrollBarVisibility="Auto"
             	    ScrollViewer.VerticalScrollBarVisibility="Disabled"
@@ -58,7 +58,7 @@
                     </ItemsPanelTemplate>
                 </ListView.ItemsPanel>
             </ListView>
-            <TextBlock x:Name="tNoMenu" TextWrapping="Wrap" Text="Henüz yemek listesi yayınlanmadı." Margin="30,209,34,248" FontFamily="Segoe UI" Foreground="#FF080808" Visibility="Collapsed"/>
+            <TextBlock x:Name="NoMenu" TextWrapping="Wrap" Text="Henüz yemek listesi yayınlanmadı." Margin="30,209,34,248" FontFamily="Segoe UI" Foreground="#FF080808" Visibility="Collapsed"/>
         </Grid>
 
         <Grid Grid.Row="1" x:Name="AboutSection" Background="White" RequestedTheme="Light" Visibility="Collapsed">
@@ -80,7 +80,7 @@
             </Grid>
             <Grid Grid.Row="1" VerticalAlignment="Top">
                 <TextBlock TextWrapping="Wrap" Text="Bu uygulama &quot;TowerLabs&quot; adına geliştirilmiştir. " Foreground="#FF4F4F4F" Width="366" FontFamily="Segoe UI" FontSize="18" TextAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,50"/>
-                <TextBlock x:Name="tTowerLabsLink" TextWrapping="Wrap" Text="TowerLabs" Foreground="#FF22598F" FontFamily="Segoe UI" FontSize="22" Tapped="tTowerLabsLink_Tapped" TextAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
+                <TextBlock x:Name="TowerLabsLink" TextWrapping="Wrap" Text="TowerLabs" Foreground="#FF22598F" FontFamily="Segoe UI" FontSize="22" Tapped="tTowerLabsLink_Tapped" TextAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
             </Grid>
         </Grid>
     </Grid>

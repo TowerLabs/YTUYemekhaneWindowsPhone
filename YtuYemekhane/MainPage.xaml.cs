@@ -109,11 +109,11 @@ namespace YtuYemekhane
             }
             if(menuList.Count==0)
             {
-                tNoMenu.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                NoMenu.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }else
             {
                 // List menu
-                lMenuList.ItemsSource = menuList;
+                Menus.ItemsSource = menuList;
             }
         }
         private async Task<String> getFoodList()
@@ -163,18 +163,18 @@ namespace YtuYemekhane
             return null;
         }
 
-        private void bAboutPage_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void ShowAboutSection_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            gAbout.Visibility = Windows.UI.Xaml.Visibility.Visible;
-            gMenuList.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-            tContent.Text = "Hakkında";
+            AboutSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            MenuList.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            PageTitle.Text = "Hakkında";
         }
 
-        private void bMenuList_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void ShowMenuSection_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            gAbout.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-            gMenuList.Visibility = Windows.UI.Xaml.Visibility.Visible;
-            tContent.Text = "Yemek Listesi";
+            AboutSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            MenuList.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            PageTitle.Text = "Yemek Listesi";
         }
 
         private void tTowerLabsLink_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
