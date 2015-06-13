@@ -21,10 +21,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -33,6 +35,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using Newtonsoft.Json;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 
@@ -44,7 +47,7 @@ namespace YtuYemekhane
     public sealed partial class App : Application
     {
         private TransitionCollection transitions;
-
+        public string APIURL;
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -53,6 +56,22 @@ namespace YtuYemekhane
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+            this.LoadAppSettingsAsync();
+        }
+
+        private async void LoadAppSettingsAsync()
+        {
+            var json = await ReadStringFromLocalFileAsync("appSettings.json");
+            var settings = JsonConvert.DeserializeObject<dynamic>(json);
+            APIURL = settings.ApiUrl;
+        }
+
+        private static async Task<string> ReadStringFromLocalFileAsync(string filename)
+        {
+            var folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            var file = await folder.GetFileAsync(filename);
+            var contents = await Windows.Storage.FileIO.ReadTextAsync(file);
+            return contents;
         }
 
         /// <summary>
