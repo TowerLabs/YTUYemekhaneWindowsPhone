@@ -15,11 +15,11 @@
                 <StackPanel>
                     <TextBlock Text="{Binding Date}" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="16" Margin="0,40,0,0"/>
                     <TextBlock Text="Öğle Yemeği" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="16" />
-                    <TextBlock Text="{Binding main_lunch}" Foreground="#FF555454" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="12" Margin="20,0,0,0"/>
-                    <TextBlock Text="{Binding alt_lunch}" Foreground="#FF555454" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="12" Margin="20,0,0,0"/>
+                    <TextBlock Text="{Binding MainLunch}" Foreground="#FF555454" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="12" Margin="20,0,0,0"/>
+                    <TextBlock Text="{Binding AltLunch}" Foreground="#FF555454" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="12" Margin="20,0,0,0"/>
                     <TextBlock Text="Akşam Yemeği" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="16" />
-                    <TextBlock Text="{Binding main_dinner}" Foreground="#FF555454" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="12" Margin="20,0,0,0"/>
-                    <TextBlock Text="{Binding main_lunch}" Foreground="#FF555454" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="12" Margin="20,0,0,0"/>
+                    <TextBlock Text="{Binding MainDinner}" Foreground="#FF555454" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="12" Margin="20,0,0,0"/>
+                    <TextBlock Text="{Binding MainLunch}" Foreground="#FF555454" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="12" Margin="20,0,0,0"/>
                 </StackPanel>
             </Grid>
         </DataTemplate>

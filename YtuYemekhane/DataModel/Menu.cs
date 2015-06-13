@@ -9,12 +9,18 @@ namespace YtuYemekhane.Model
 {
     public class Menu
     {
-        public String Date{get;set;}
-        public String main_lunch{get;set;}
-        public String alt_lunch{get;set;}
-        public String alt_dinner{get;set;}
-        public String main_dinner { get; set; }
-    }
+        public String Date { get; set; }
 
-   
+        [JsonProperty("main_lunch")]
+        public String MainLunch { get; set; }
+
+        [JsonProperty("main_dinner")]
+        public String MainDinner { get; set; }
+
+        [JsonProperty("alt_lunch")]
+        public String AltLunch { get; set; }
+
+        [JsonProperty("alt_dinner")]
+        public String AltDinner { get; set; }
+    }
 }

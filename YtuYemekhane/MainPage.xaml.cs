@@ -99,10 +99,10 @@ namespace YtuYemekhane
                         menuList.Add(new Menu
                         {
                             Date = menu.Key.ToString(),
-                            main_dinner = reg.Replace(menu.Value["main_dinner"].ToString(),""),
-                            main_lunch = reg.Replace(menu.Value["main_lunch"].ToString(),""),
-                            alt_dinner = reg.Replace(menu.Value["alt_dinner"].ToString(),""),
-                            alt_lunch = reg.Replace(menu.Value["alt_lunch"].ToString(),""),
+                            MainDinner = reg.Replace(menu.Value["main_dinner"].ToString(),""),
+                            MainLunch = reg.Replace(menu.Value["main_lunch"].ToString(),""),
+                            AltDinner = reg.Replace(menu.Value["alt_dinner"].ToString(),""),
+                            AltLunch = reg.Replace(menu.Value["alt_lunch"].ToString(),""),
                         });
                     }
                 }
