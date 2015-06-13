@@ -47,7 +47,7 @@ namespace YtuYemekhane
     public sealed partial class App : Application
     {
         private TransitionCollection transitions;
-        public string APIURL;
+        public static string APIURL;
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -56,10 +56,10 @@ namespace YtuYemekhane
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
-            this.LoadAppSettingsAsync();
+            this.LoadAppSettingsAsync().Wait();
         }
 
-        private async void LoadAppSettingsAsync()
+        private async Task LoadAppSettingsAsync()
         {
             var json = await ReadStringFromLocalFileAsync("appSettings.json");
             var settings = JsonConvert.DeserializeObject<dynamic>(json);
