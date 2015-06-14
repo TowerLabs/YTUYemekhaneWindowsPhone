@@ -30,111 +30,115 @@ using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using Windows.UI.ViewManagement;
+using Newtonsoft.Json;
+using Windows.UI.Xaml;
+using Windows.UI.Core;
+using System.Net.NetworkInformation;
+using Windows.UI.Popups;
 
 namespace YtuYemekhane
 {
     public sealed partial class MainPage : Page
     {
+        private static StorageFolder LOCALFOLDER = Windows.Storage.ApplicationData.Current.LocalFolder;
+        private DateTime date = DateTime.Today;
+        private string currentDate;
+        private List<Menu> menu = new List<Menu>();
         public MainPage()
         {
             this.InitializeComponent();
+            this.NavigationCacheMode = NavigationCacheMode.Required;
+        }
 
-            this.NavigationCacheMode = NavigationCacheMode.Required; 
+        private async Task Initialize()
+        {
+            Window.Current.Dispatcher.RunAsync(CoreDispatcherPriority.Low, async () =>
+            {
+                await StatusBar.GetForCurrentView().HideAsync();
+                currentDate = date.ToString("MM/yyyy").Replace("/", "");
+
+                var isExist = await IsLocalMenuExist();
+                if (isExist)
+                {
+                    menu = await ReadMenuFromFileAsync(currentDate);
+                }
+                else
+                {
+                    var json = await GetMenuJsonFromApiAsync();
+                    if (json != null)
+                    {
+                        menu = ConvertJsonToMenuList(json, currentDate);
+                        WriteMenuJsonToLocalFileAsync(json, currentDate);
+                    }
+                }
+                PrintMenuListToScreen(menu, date.ToString("dd/MM/yyyy").Replace(".", "/"));
+                progress.IsActive = false;
+            });
+        }
+
+        private async Task<string> GetMenuJsonFromApiAsync()
+        {
+            if (NetworkInterface.GetIsNetworkAvailable())
+            {
+                HttpClient client = new HttpClient(new HttpClientHandler());
+                return await client.GetStringAsync(App.APIURL);
+            }
+            else
+            {
+                ShowInternetConnectionProblemDialog();
+                return null;
+            }
+        }
+
+        private void ShowInternetConnectionProblemDialog()
+        {
+            MessageDialog msg = new MessageDialog("Yemek listesinin indirilebilmesi için internet bağlantısı gerekmektedir.", "İnternet Erişim Problemi");
+
+            UICommand okButton = new UICommand("OK");
+            okButton.Invoked = OkButton_Click;
+            msg.Commands.Add(okButton);
+
+            msg.ShowAsync();
+        }
+
+        private void OkButton_Click(IUICommand command)
+        {
+            App.Current.Exit();            
+        }
+
+        private async Task<bool> IsLocalMenuExist()
+        {
+            var result = await LOCALFOLDER.GetItemsAsync();
+            var menuFile = result.FirstOrDefault(x => x.Name == currentDate);
+            return menuFile != null;
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            // Hide statusbar
-            await StatusBar.GetForCurrentView().HideAsync();
+            Initialize();
+        }
 
-            // get localfolder
-            StorageFolder local = Windows.Storage.ApplicationData.Current.LocalFolder;
-
-            // get today time
-            DateTime date = DateTime.Today;
-
-            String currentDate = date.ToString("MM/yyyy");
-            currentDate = currentDate.Replace("/", "");
-            var result = await local.GetItemsAsync();
-            var menu = result.FirstOrDefault(x => x.Name == currentDate);
-            if (menu == null)
+        private void PrintMenuListToScreen(List<Menu> menu, String date)
+        {
+            if (menu.Count == 0)
             {
-                var list = await getFoodList();
-                await WriteToFile(local, list, currentDate);
-                printToScreenMenuList(list, date.ToString("dd/MM/yyyy").Replace(".","/"));
+                NoMenu.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }
             else
             {
-                String json = await ReadFile(local, currentDate);
-                printToScreenMenuList(json, date.ToString("dd/MM/yyyy").Replace(".", "/"));
-            }
-
-            
-        }
-        private void printToScreenMenuList(String json,String date)
-        {
-            ObservableCollection<Menu> menuList = new ObservableCollection<Menu>();
-
-            int result;
-            String menuKey;
-
-            // Day of month
-            date = date.Substring(0, 2);
-
-            // parse as Json array 
-            var objects = JArray.Parse(json);  
-            Regex reg = new Regex("[&#13,;]");
-
-            foreach (JObject root in objects)
-            {
-                foreach (KeyValuePair<String, JToken> menu in root)
-                {
-                    //menuKey = menu.Key.ToString().Replace(".", "/");
-                    menuKey = menu.Key.ToString().Substring(0, 2);
-                    //int result = DateTime.Compare(DateTime.Parse(menuKey), DateTime.Parse(date));
-                    result = Convert.ToInt32(menuKey) - Convert.ToInt32(date);
-
-                    if(result>=0)
-                    {
-                        menuList.Add(new Menu
-                        {
-                            Date = menu.Key.ToString(),
-                            main_dinner = reg.Replace(menu.Value["main_dinner"].ToString(),""),
-                            main_lunch = reg.Replace(menu.Value["main_lunch"].ToString(),""),
-                            alt_dinner = reg.Replace(menu.Value["alt_dinner"].ToString(),""),
-                            alt_lunch = reg.Replace(menu.Value["alt_lunch"].ToString(),""),
-                        });
-                    }
-                }
-            }
-            if(menuList.Count==0)
-            {
-                tNoMenu.Visibility = Windows.UI.Xaml.Visibility.Visible;
-            }else
-            {
-                // List menu
-                lMenuList.ItemsSource = menuList;
+                Menus.ItemsSource = menu;
             }
         }
-        private async Task<String> getFoodList()
+
+        private async Task WriteMenuJsonToLocalFileAsync(string json, String date)
         {
-            List<Menu> menus = new List<Menu>();
-            HttpClient client = new HttpClient(new HttpClientHandler());
+            var menu = ConvertJsonToMenuList(json, currentDate);
 
-            String json = await client.GetStringAsync("HERE Api Token");
-
-            return json;
-
-        }
-        
-
-        private async Task WriteToFile(StorageFolder local,String json, String date)
-        {
             // Json to byteArray
-            byte[] fileBytes = System.Text.Encoding.UTF8.GetBytes(json);
+            byte[] fileBytes = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(menu));
 
             // Create a file which name is date
-            var file = await local.CreateFileAsync(date,
+            var file = await LOCALFOLDER.CreateFileAsync(date,
                  CreationCollisionOption.ReplaceExisting);
 
             // Write the data from fileBytes
@@ -143,48 +147,81 @@ namespace YtuYemekhane
                 s.Write(fileBytes, 0, fileBytes.Length);
             }
         }
-        private async Task<String> ReadFile(StorageFolder local,String date)
+        private async Task<List<Menu>> ReadMenuFromFileAsync(String date)
         {
             String json;
 
-            if (local != null)
+            // Get the file.
+            var file = await LOCALFOLDER.OpenStreamForReadAsync(date);
+
+            // Read the data.
+            using (StreamReader streamReader = new StreamReader(file))
             {
-
-                // Get the file.
-                var file = await local.OpenStreamForReadAsync(date);
-
-                // Read the data.
-                using (StreamReader streamReader = new StreamReader(file))
-                {
-                    json = streamReader.ReadToEnd();
-                }
-                return json;
+                json = streamReader.ReadToEnd();
             }
-            return null;
+            return JsonConvert.DeserializeObject<List<Menu>>(json);
+
         }
 
-        private void bAboutPage_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private List<Menu> ConvertJsonToMenuList(string json, string date)
         {
-            gAbout.Visibility = Windows.UI.Xaml.Visibility.Visible;
-            gMenuList.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-            tContent.Text = "Hakkında";
+            List<Menu> menuList = new List<Menu>();
+
+            int result;
+            String menuKey;
+
+            // Day of month
+            date = date.Substring(0, 2);
+
+            // parse as Json array 
+            var objects = JArray.Parse(json);
+            Regex reg = new Regex("[&#13,;]");
+
+            foreach (JObject root in objects)
+            {
+                foreach (KeyValuePair<String, JToken> menu in root)
+                {
+                    menuKey = menu.Key.ToString().Substring(0, 2);
+                    result = Convert.ToInt32(menuKey) - Convert.ToInt32(date);
+
+                    if (result >= 0)
+                    {
+                        menuList.Add(new Menu
+                        {
+                            Date = menu.Key.ToString(),
+                            MainDinner = reg.Replace(menu.Value["main_dinner"].ToString(), ""),
+                            MainLunch = reg.Replace(menu.Value["main_lunch"].ToString(), ""),
+                            AltDinner = reg.Replace(menu.Value["alt_dinner"].ToString(), ""),
+                            AltLunch = reg.Replace(menu.Value["alt_lunch"].ToString(), ""),
+                        });
+                    }
+                }
+            }
+            return menuList;
         }
 
-        private void bMenuList_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void ShowAboutSection_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            gAbout.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-            gMenuList.Visibility = Windows.UI.Xaml.Visibility.Visible;
-            tContent.Text = "Yemek Listesi";
+            AboutSection.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            MenuList.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            PageTitle.Text = "Hakkında";
         }
 
-        private void tTowerLabsLink_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void ShowMenuSection_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            AboutSection.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            MenuList.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            PageTitle.Text = "Yemek Listesi";
+        }
+
+        private void TowerLabsLink_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             // Open website of towerlabs
             Uri uri = new Uri("http://www.towerlabs.co");
             Windows.System.Launcher.LaunchUriAsync(uri);
         }
 
-        private void tProfil_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        private void Profil_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             // Open website of developer
             Uri uri = new Uri("http://www.twitter.com/SezginEge");
